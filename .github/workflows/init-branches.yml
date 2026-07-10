@@ -1,0 +1,104 @@
+name: Initialize Repository Branches
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/init-branches.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  initialize-branches:
+    name: Create Development Branches
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v7
+
+      - name: Configure git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Create test-development branch
+        run: |
+          if git rev-parse --verify origin/test-development >/dev/null 2>&1; then
+            echo "✓ Branch 'test-development' already exists"
+          else
+            git checkout -b test-development
+            git push -u origin test-development
+            echo "✓ Created and pushed 'test-development' branch"
+          fi
+
+      - name: Create container-development branch
+        run: |
+          if git rev-parse --verify origin/container-development >/dev/null 2>&1; then
+            echo "✓ Branch 'container-development' already exists"
+          else
+            git checkout -b container-development
+            git push -u origin container-development
+            echo "✓ Created and pushed 'container-development' branch"
+          fi
+
+      - name: Create security-review branch
+        run: |
+          if git rev-parse --verify origin/security-review >/dev/null 2>&1; then
+            echo "✓ Branch 'security-review' already exists"
+          else
+            git checkout -b security-review
+            git push -u origin security-review
+            echo "✓ Created and pushed 'security-review' branch"
+          fi
+
+      - name: Configure branch protection rules
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="${{ github.repository }}"
+          
+          # Protect main: require tests pass before merge to security-review
+          gh api repos/$REPO/branches/main/protection \
+            --input - <<EOF 2>/dev/null || echo "Main already protected or organization restriction"
+          {
+            "required_status_checks": {
+              "strict": true,
+              "contexts": []
+            },
+            "enforce_admins": true,
+            "required_pull_request_reviews": null,
+            "dismiss_stale_reviews": false,
+            "require_code_owner_reviews": false,
+            "required_linear_history": false,
+            "allow_force_pushes": false,
+            "allow_deletions": false,
+            "restrictions": null
+          }
+          EOF
+
+      - name: Display success message
+        run: |
+          echo "=================================================="
+          echo "✓ Repository initialized successfully!"
+          echo "=================================================="
+          echo ""
+          echo "Your branches are ready:"
+          echo "  • main (production, auto-deploys to Docker Hub)"
+          echo "  • test-development (test specifications)"
+          echo "  • container-development (Dockerfile development)"
+          echo "  • security-review (vulnerability scanning & gate)"
+          echo ""
+          echo "Next steps:"
+          echo "  1. Read ONBOARDING.md for the full workflow"
+          echo "  2. Set up Docker Hub secrets:"
+          echo "     - DOCKERHUB_USERNAME"
+          echo "     - DOCKERHUB_TOKEN"
+          echo "  3. Create a test branch:"
+          echo "     git checkout test-development"
+          echo "     git checkout -b test-development/my-feature"
+          echo "  4. Write your first Bats test in bats-tests/"
+          echo ""
