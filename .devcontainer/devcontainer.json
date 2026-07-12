@@ -1,3 +1,3 @@
 {
-  "postCreateCommand": "bash /scripts/apt-update.bash && /scripts/install.bash"
+  "onCreateCommand": "chmod +x .github/scripts/setup/init.sh && .github/scripts/setup/init.sh && chmod -x .github/scripts/setup/init.sh && sleep 3"
 }
