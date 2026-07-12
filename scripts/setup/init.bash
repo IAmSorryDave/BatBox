@@ -1,4 +1,4 @@
 #!/usr/bin/bash
 
-chmod +x .github/scripts/setup/apt-update.bash && .github/scripts/setup/apt-update.bash && chmod -x .github/scripts/setup/apt-update.bash && sleep 3
-chmod +x .github/scripts/setup/install.bash && .github/scripts/setup/install.bash && chmod -x .github/scripts/setup/install.bash && sleep 3
+chmod +x scripts/setup/apt-update.bash && scripts/setup/apt-update.bash && chmod -x scripts/setup/apt-update.bash && sleep 3
+chmod +x scripts/setup/install.bash && scripts/setup/install.bash && chmod -x scripts/setup/install.bash && sleep 3
