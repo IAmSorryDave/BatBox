@@ -19,3 +19,14 @@ This workflow separates concerns into a **multi-branch strategy**:
    ```bash
    git clone https://github.com/<your-username>/<your-repo>.git
    cd <your-repo>
+
+### Security Scanning & SARIF
+
+When you create a PR to `security-review`:
+
+1. **Trivy automatically scans** your Docker image for vulnerabilities
+2. **Results upload to GitHub's code scanning** (SARIF format)
+3. **View in:** Settings → Security → Code scanning alerts
+4. **Address vulnerabilities** before merging to `main`
+
+GitHub will block merges if critical vulnerabilities exist (if branch protection is enforced).
