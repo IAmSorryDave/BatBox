@@ -22,7 +22,7 @@ jobs:
       - name: Load .env file
         uses: dotenv-action/dotenv@v1
         with:
-          env_file: .env
+          env_file: ${GITHUB_WORKSPACE}/.env
 
       - name: Build Docker image
         shell: bash
