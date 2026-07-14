@@ -1,0 +1,11 @@
+
+- repo: local
+    hooks:
+      - id: write-version
+        name: Increment Container Version.
+        entry: python .python/scripts/write_version.py
+        fail_fast: true
+        language: python
+        additional_dependencies:
+          - jinja2
+        stages: [pre-commit]
