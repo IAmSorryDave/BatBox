@@ -1,3 +1,4 @@
 {
-  "onCreateCommand": "chmod +x scripts/setup/init.bash && scripts/setup/init.bash && chmod -x scripts/setup/init.bash && sleep 3"
+  "onCreateCommand": "chmod +x scripts/setup/init.bash && scripts/setup/init.bash && chmod -x scripts/setup/init.bash && sleep 3",
+  "postCreateCommand": "chmod +x scripts/setup/precommit.bash && scripts/setup/precommit.bash && chmod -x scripts/setup/precommit.bash && sleep 3"
 }
