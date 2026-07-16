@@ -8,9 +8,20 @@ class VersionFileManager(Version):
   A subclass of Version which creates a VERSION file if none exists then parses the file.
   """
   
-  version_filename: str = "VERSION"
   version_filename_encoding: str = "utf-8"
   semantic_version_starting_label: str = "0.0.0"
+
+  def __init__(self, version_filename: str = "VERSION", alternate_directory_path: Path | None = None, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.version_filename, self.alternate_directory_path = version_filename, alternate_directory_path
+
+  @property
+  def version_filepath(self) -> Path:
+    if self.alternate_directory_path:
+      path = self.alternate_directory_path / Path(self.version_filename)
+    else
+      path = Path(self.version_filename)
+    return path
 
   @property
   def update_version_file(self) -> None:
@@ -41,7 +52,6 @@ class VersionFileManager(Version):
     super().bump_build()
     self.update_version_file
 
-  @staticmethod
   def read_and_validate_version_file(version_filepath: Path, *args, **kwargs) -> Version:
     
     version_label = open(version_filepath,"r").read().strip()
@@ -63,29 +73,30 @@ class VersionFileManager(Version):
       f.write(semantic_version_label)
   
   @classmethod
-  def parse(cls, alternate_version_filename: str | None = None, *args, **kwargs):
+  def parse(cls, version_filename: str = "VERSION", alternate_directory_path: Path | None = None, *args, **kwargs):
 
     """
     Parse a version file. If none found initializes new version file.
-
-    :param version_filename: Alternate Filename 
+    
+    :param version_filename: Version Filename
+    :param alternate_directory_path: Alternate Directory Containing Version File
     :return: a new instance
     """
 
-    if alternate_version_filename:
-      version_filepath: Path = Path(alternate_version_filename).resolve()
-    else:
-      version_filepath: Path = Path(cls.version_filename).resolve()
+    version_filepath = cls(
+      version_filename=version_filename, 
+      alternate_directory_path=alternate_directory_path
+    ).version_filepath
       
     if version_filepath.exists():
       version_instance = cls.read_and_validate_version_file(version_filepath, *args, **kwargs)
     else:
-      version_instance = cls.initialize_version_file(version_filepath, semantic_version_starting_label=cls.semantic_version_starting_label, version_filename_encoding=cls.version_filename_encoding, *args, **kwargs)
-
-    if alternate_version_filename:
-      version_instance.version_filename = alternate_version_filename
-
-    version_instance.version_filepath = version_filepath
+      version_instance = cls.initialize_version_file(
+        version_filepath, 
+        semantic_version_starting_label=cls.semantic_version_starting_label, 
+        version_filename_encoding=cls.version_filename_encoding, 
+        *args, **kwargs
+      )
 
     return version_instance
 
